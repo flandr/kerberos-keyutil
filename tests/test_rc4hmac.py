@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Copyright (c) 2015, Nate Rosenblum
+# Copyright (c) 2014, Nate Rosenblum
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -21,11 +21,18 @@
 # CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-from __future__ import print_function
 
-import hashlib
+from context import keyutil
 
-def derive_password_rc4hmac(password):
-    """ Derive a RC4-HMAC key from a password """
-    return bytearray(hashlib.new("md4", password.encode("utf-16-le")).digest())
+from keyutil.util.nfold import nfold
+from nose.tools import assert_equals
 
+from keyutil.derive import derive_password_rc4hmac
+
+def test_derive_rc4hmac():
+    """ Verifies key derivation for RC4-HMAC encryption types """
+    # All of this is right there in RFC 4757
+    password = "foo"
+    expected_key = bytearray([0xac, 0x8e, 0x65, 0x7f, 0x83, 0xdf, 0x82, 0xbe,
+                              0xea, 0x5d, 0x43, 0xbd, 0xaf, 0x78, 0x00, 0xcc])
+    assert_equals(derive_password_rc4hmac(password), expected_key)
